@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binary Tree Traversal | Smart Parcel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <style>
+        .btn-traversal {
+            padding: 12px 22px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-traversal.active {
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+        }
+
+        .result-box {
+            background: #f8fafc;
+            border: 2px dashed #93c5fd;
+            border-radius: 12px;
+            padding: 18px 24px;
+        }
+
+        .sequence-text {
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e3a8a;
+            letter-spacing: 0.5px;
+        }
+
+        .hub-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #ffffff;
+            border: 1px solid #bfdbfe;
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-weight: 600;
+            color: #1e293b;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+        }
+
+        .hub-pill .hub-id-badge {
+            background: #2563eb;
+            color: #ffffff;
+            border-radius: 12px;
+            padding: 2px 8px;
+            font-size: 12px;
+        }
+
+        .arrow-sep {
+            color: #3b82f6;
+            font-weight: bold;
+            font-size: 18px;
+            margin: 0 4px;
+        }
+
+        .tree-scroll-container {
+            width: 100%;
+            overflow-x: auto;
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 10px 0;
+        }
+
+        .step-badge {
+            background: #dbeafe;
+            color: #1d4ed8;
+            font-weight: 700;
+            border-radius: 8px;
+            padding: 4px 10px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Unified Top Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark navbar-smart sticky-top mb-4">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand" href="/">
+            <i class="bi bi-box-seam-fill text-primary"></i>
+            <span>Smart Parcel</span>
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#smartNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="smartNavbar">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
+                <li class="nav-item">
+                    <a class="nav-link" href="/"><i class="bi bi-speedometer2"></i> Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/parcels"><i class="bi bi-box-seam"></i> Parcels</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/queue"><i class="bi bi-truck"></i> Queue</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/hubs"><i class="bi bi-diagram-3"></i> Hubs</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/network"><i class="bi bi-share"></i> Network</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/status"><i class="bi bi-layers"></i> Status</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/sorting"><i class="bi bi-sort-numeric-down"></i> Sorting</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/search"><i class="bi bi-search"></i> Search</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/binary-tree"><i class="bi bi-diagram-2"></i> Tree Demo</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container py-2 pb-5">
+
+    <!-- Page Header -->
+    <div class="page-header-smart mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <span class="badge bg-white bg-opacity-25 text-white mb-2"><i class="bi bi-diagram-2-fill me-1"></i> Hierarchical Data Structure</span>
+                <h2 class="fw-bold mb-1">Binary Tree Traversal Demonstration</h2>
+                <p class="mb-0 opacity-75">
+                    Delivery Hub Hierarchy traversal demonstration for Data Structures project evaluation.
+                </p>
+            </div>
+            <span class="badge bg-white text-dark px-3 py-2 fw-semibold shadow-sm"><i class="bi bi-mortarboard-fill text-primary me-1"></i> MCA Viva Demo</span>
+        </div>
+    </div>
+
+    <!-- Traversal Control & Explanation Card -->
+    <div class="card content-card p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3">
+            <div>
+                <h4 class="fw-bold mb-1">Select Tree Traversal</h4>
+                <p class="text-secondary mb-0">Choose a traversal algorithm to execute on the delivery hub tree.</p>
+            </div>
+            <div class="btn-group" role="group" aria-label="Tree Traversals">
+                <a href="{{ url_for('binary_tree_page', traversal='inorder') }}"
+                   id="btn-inorder"
+                   class="btn btn-traversal {% if active_traversal == 'inorder' %}btn-primary active{% else %}btn-outline-primary{% endif %}">
+                    Inorder (Left → Root → Right)
+                </a>
+                <a href="{{ url_for('binary_tree_page', traversal='preorder') }}"
+                   id="btn-preorder"
+                   class="btn btn-traversal {% if active_traversal == 'preorder' %}btn-primary active{% else %}btn-outline-primary{% endif %}">
+                    Preorder (Root → Left → Right)
+                </a>
+                <a href="{{ url_for('binary_tree_page', traversal='postorder') }}"
+                   id="btn-postorder"
+                   class="btn btn-traversal {% if active_traversal == 'postorder' %}btn-primary active{% else %}btn-outline-primary{% endif %}">
+                    Postorder (Left → Right → Root)
+                </a>
+            </div>
+        </div>
+
+        <!-- Explanation Panel -->
+        <div id="explanation-panel" class="alert alert-primary d-flex align-items-start gap-3 mb-3" style="border-left: 5px solid #2563eb;">
+            <div class="fs-4">💡</div>
+            <div>
+                <h5 id="explanation-title" class="fw-bold mb-1">{{ explanation.title }}</h5>
+                <p id="explanation-rule" class="mb-1 text-primary-emphasis fw-semibold">
+                    <strong>Rule:</strong> {{ explanation.rule }}
+                </p>
+                <small id="explanation-desc" class="text-secondary">{{ explanation.description }}</small>
+            </div>
+        </div>
+
+        <!-- Traversal Result Panel -->
+        <div class="result-box">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+                <span class="text-uppercase text-secondary fw-bold small" id="result-label">
+                    Traversal Result (Hub IDs Sequence)
+                </span>
+                <span class="badge bg-primary-subtle text-primary fw-semibold px-2 py-1">Generated by BinaryTree Traversal Method</span>
+            </div>
+            <div id="sequence-display" class="sequence-text mb-3">
+                {{ sequence_str }}
+            </div>
+            <div class="d-flex flex-wrap align-items-center gap-2" id="sequence-pills">
+                {% for hub_id in sequence %}
+                    {% for n in nodes if n.hub_id == hub_id %}
+                        <div class="hub-pill">
+                            <span class="hub-id-badge">ID: {{ n.hub_id }}</span>
+                            <span>{{ n.hub_name }}</span>
+                            <small class="text-muted">({{ n.location }})</small>
+                        </div>
+                        {% if not loop.last %}
+                            <span class="arrow-sep">→</span>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Visual Delivery-Hub Tree Card -->
+    <div class="card content-card p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+            <div>
+                <h4 class="fw-bold mb-1">Visual Delivery-Hub Tree Hierarchy</h4>
+                <p class="text-secondary mb-0">Delivery Center hierarchy nodes connected with directional paths.</p>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <span class="badge text-bg-light border text-secondary">
+                    <span class="d-inline-block rounded-circle bg-primary me-1" style="width: 9px; height: 9px;"></span>
+                    Numbered badges indicate current traversal visit sequence (1 to 7)
+                </span>
+            </div>
+        </div>
+
+        <div class="tree-scroll-container">
+            <svg id="tree-svg" viewBox="0 0 940 370" class="w-100" style="min-width: 780px; height: auto;" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <filter id="shadow" x="-5%" y="-5%" width="110%" height="120%">
+                        <feDropShadow dx="0" dy="3" stdDeviation="4" flood-opacity="0.08" />
+                    </filter>
+                    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                        <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#64748b" />
+                    </marker>
+                </defs>
+
+                <!-- Connector Lines: Level 0 to Level 1 -->
+                <!-- Root (100) to Left Child (50) -->
+                <line x1="470" y1="99" x2="240" y2="145" stroke="#94a3b8" stroke-width="2.5" marker-end="url(#arrow)" />
+                <rect x="335" y="110" width="34" height="18" rx="4" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1" />
+                <text x="352" y="123" font-size="10" font-family="Arial, sans-serif" font-weight="bold" fill="#475569" text-anchor="middle">Left</text>
+
+                <!-- Root (100) to Right Child (150) -->
+                <line x1="470" y1="99" x2="700" y2="145" stroke="#94a3b8" stroke-width="2.5" marker-end="url(#arrow)" />
+                <rect x="568" y="110" width="40" height="18" rx="4" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1" />
+                <text x="588" y="123" font-size="10" font-family="Arial, sans-serif" font-weight="bold" fill="#475569" text-anchor="middle">Right</text>
+
+                <!-- Connector Lines: Level 1 to Level 2 -->
+                <!-- 50 to 25 -->
+                <line x1="240" y1="209" x2="125" y2="265" stroke="#94a3b8" stroke-width="2.5" marker-end="url(#arrow)" />
+                <rect x="165" y="226" width="34" height="18" rx="4" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1" />
+                <text x="182" y="239" font-size="10" font-family="Arial, sans-serif" font-weight="bold" fill="#475569" text-anchor="middle">Left</text>
+
+                <!-- 50 to 75 -->
+                <line x1="240" y1="209" x2="355" y2="265" stroke="#94a3b8" stroke-width="2.5" marker-end="url(#arrow)" />
+                <rect x="280" y="226" width="40" height="18" rx="4" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1" />
+                <text x="300" y="239" font-size="10" font-family="Arial, sans-serif" font-weight="bold" fill="#475569" text-anchor="middle">Right</text>
+
+                <!-- 150 to 125 -->
+                <line x1="700" y1="209" x2="585" y2="265" stroke="#94a3b8" stroke-width="2.5" marker-end="url(#arrow)" />
+                <rect x="625" y="226" width="34" height="18" rx="4" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1" />
+                <text x="642" y="239" font-size="10" font-family="Arial, sans-serif" font-weight="bold" fill="#475569" text-anchor="middle">Left</text>
+
+                <!-- 150 to 175 -->
+                <line x1="700" y1="209" x2="815" y2="265" stroke="#94a3b8" stroke-width="2.5" marker-end="url(#arrow)" />
+                <rect x="740" y="226" width="40" height="18" rx="4" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1" />
+                <text x="760" y="239" font-size="10" font-family="Arial, sans-serif" font-weight="bold" fill="#475569" text-anchor="middle">Right</text>
+
+                <!-- ================= ROOT NODE (100) ================= -->
+                <g id="node-100" class="tree-node" data-hub-id="100">
+                    <rect x="385" y="35" width="170" height="64" rx="10" fill="#ffffff" stroke="#2563eb" stroke-width="2.2" filter="url(#shadow)" />
+                    <!-- Header Pill -->
+                    <rect x="395" y="43" width="70" height="20" rx="6" fill="#14213d" />
+                    <text x="430" y="57" font-size="11" font-family="Arial, sans-serif" font-weight="bold" fill="#ffffff" text-anchor="middle">ID: 100</text>
+                    <!-- Step Badge -->
+                    <circle cx="537" cy="53" r="12" fill="#2563eb" />
+                    <text id="step-100" x="537" y="57" font-size="11" font-family="Arial, sans-serif" font-weight="bold" fill="#ffffff" text-anchor="middle">#4</text>
+                    <!-- Text Info -->
+                    <text x="395" y="78" font-size="13" font-family="Arial, sans-serif" font-weight="bold" fill="#0f172a">Central Hub</text>
+                    <text x="395" y="92" font-size="11" font-family="Arial, sans-serif" fill="#64748b">📍 Kochi (Root)</text>
+                </g>
+
+                <!-- ================= LEVEL 1: NODE 50 ================= -->
+                <g id="node-50" class="tree-node" data-hub-id="50">
+                    <rect x="160" y="145" width="160" height="64" rx="10" fill="#ffffff" stroke="#3b82f6" stroke-width="1.8" filter="url(#shadow)" />
+                    <rect x="170" y="153" width="60" height="20" rx="6" fill="#1e3a8a" />
+                    <text x="200" y="167" font-size="11" font-family="Arial, sans-serif" font-weight="bold" fill="#ffffff" text-anchor="middle">ID: 50</text>
+                    <circle cx="303" cy="163" r="12" fill="#2563eb" />
+                    <text id="step-50" x="303" y="167" font-size="11" font-family="Arial, sans-serif" font-weight="bold" fill="#ffffff" text-anchor="middle">#2</text>
+                    <text x="170" y="188" font-size="13" font-family="Arial, sans-serif" font-weight="bold" fill="#0f172a">West Hub</text>
+                    <text x="170" y="202" font-size="11" font-family="Arial, sans-serif" fill="#64748b">📍 Kozhikode</text>
+                </g>
+
+                <!-- ================= LEVEL 1: NODE 150 ================= -->
+                <g id="node-150" class="tree-node" data-hub-id="150">
+                    <rect x="620" y="145" width="160" height="64" rx="10" fill="#ffffff" stroke="#3b82f6" stroke-width="1.8" filter="url(#shadow)" />
+                    <rect x="630" y="153" width="65" height="20" rx="6" fill="#1e3a8a" />
+                    <text x="662" y="167" font-size="11" font-family="Arial, sans-serif" font-weight="bold" fill="#ffffff" text-anchor="middle">ID: 150</text>
+                    <circle cx="763" cy="163" r="12" fill="#2563eb" />
+                    <text id="step-150" x="763" y="167" font-size="11" font-family="Arial, sans-serif" font-weight="bold" fill="#ffffff" text-anchor="middle">#6</text>
+                    <text x="630" y="188" font-size="13" font-family="Arial, sans-serif" font-weight="bold" fill="#0f172a">East Hub</text>
+                    <text x="630" y="202" font-size="11" font-family="Arial, sans-serif" fill="#64748b">📍 Thrissur</text>
+                </g>
+
+                <!-- ================= LEVEL 2: NODE 25 ================= -->
+                <g id="node-25" class="tree-node" data-hub-id="25">
+                    <rect x="50" y="265" width="150" height="64" rx="10" fill="#ffffff" stroke="#60a5fa" stroke-width="1.6" filter="url(#shadow)" />
+                    <rect x="60" y="273" width="58" height="20" rx="6" fill="#2563eb" />
+                    <text x="89" y="287" font-size="11" font-family="Arial, sans-serif" font-weight="bold" fill="#ffffff" text-anchor="middle">ID: 25</text>
+                    <circle cx="183" cy="283" r="12" fill="#2563eb" />
+                    <text id="step-25" x="183" y="287" font-size="11" font-family="Arial, sans-serif" font-weight="bold" fill="#ffffff" text-anchor="middle">#1</text>
+                    <text x="60" y="308" font-size="13" font-family="Arial, sans-serif" font-weight="bold" fill="#0f172a">North Hub</text>
+                    <text x="60" y="322" font-size="11" font-family="Arial, sans-serif" fill="#64748b">📍 Kannur</text>
+                </g>
+
+                <!-- ================= LEVEL 2: NODE 75 ================= -->
+                <g id="node-75" class="tree-node" data-hub-id="75">
+                    <rect x="280" y="265" width="150" height="64" rx="10" fill="#ffffff" stroke="#60a5fa" stroke-width="1.6" filter="url(#shadow)" />
+                    <rect x="290" y="273" width="58" height="20" rx="6" fill="#2563eb" />
+                    <text x="319" y="287" font-size="11" font-family="Arial, sans-serif" font-weight="bold" fill="#ffffff" text-anchor="middle">ID: 75</text>
+                    <circle cx="413" cy="283" r="12" fill="#2563eb" />
+                    <text id="step-75" x="413" y="287" font-size="11" font-family="Arial, sans-serif" font-weight="bold" fill="#ffffff" text-anchor="middle">#3</text>
+                    <text x="290" y="308" font-size="13" font-family="Arial, sans-serif" font-weight="bold" fill="#0f172a">South Hub</text>
+                    <text x="290" y="322" font-size="11" font-family="Arial, sans-serif" fill="#64748b">📍 Alappuzha</text>
+                </g>
+
+                <!-- ================= LEVEL 2: NODE 125 ================= -->
+                <g id="node-125" class="tree-node" data-hub-id="125">
+                    <rect x="510" y="265" width="150" height="64" rx="10" fill="#ffffff" stroke="#60a5fa" stroke-width="1.6" filter="url(#shadow)" />
+                    <rect x="520" y="273" width="62" height="20" rx="6" fill="#2563eb" />
+                    <text x="551" y="287" font-size="11" font-family="Arial, sans-serif" font-weight="bold" fill="#ffffff" text-anchor="middle">ID: 125</text>
+                    <circle cx="643" cy="283" r="12" fill="#2563eb" />
+                    <text id="step-125" x="643" y="287" font-size="11" font-family="Arial, sans-serif" font-weight="bold" fill="#ffffff" text-anchor="middle">#5</text>
+                    <text x="520" y="308" font-size="13" font-family="Arial, sans-serif" font-weight="bold" fill="#0f172a">Mid Hub</text>
+                    <text x="520" y="322" font-size="11" font-family="Arial, sans-serif" fill="#64748b">📍 Palakkad</text>
+                </g>
+
+                <!-- ================= LEVEL 2: NODE 175 ================= -->
+                <g id="node-175" class="tree-node" data-hub-id="175">
+                    <rect x="740" y="265" width="150" height="64" rx="10" fill="#ffffff" stroke="#60a5fa" stroke-width="1.6" filter="url(#shadow)" />
+                    <rect x="750" y="273" width="62" height="20" rx="6" fill="#2563eb" />
+                    <text x="781" y="287" font-size="11" font-family="Arial, sans-serif" font-weight="bold" fill="#ffffff" text-anchor="middle">ID: 175</text>
+                    <circle cx="873" cy="283" r="12" fill="#2563eb" />
+                    <text id="step-175" x="873" y="287" font-size="11" font-family="Arial, sans-serif" font-weight="bold" fill="#ffffff" text-anchor="middle">#7</text>
+                    <text x="750" y="308" font-size="13" font-family="Arial, sans-serif" font-weight="bold" fill="#0f172a">City Hub</text>
+                    <text x="750" y="322" font-size="11" font-family="Arial, sans-serif" fill="#64748b">📍 Bengaluru</text>
+                </g>
+            </svg>
+        </div>
+    </div>
+
+    <!-- Node Details Table Card -->
+    <div class="card content-card p-4">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+            <div>
+                <h4 class="fw-bold mb-1">Tree Node Hierarchy Details</h4>
+                <p class="text-secondary mb-0">Delivery Hub tree node definitions, locations, and structural positions.</p>
+            </div>
+            <span class="badge bg-secondary-subtle text-secondary fw-semibold">7 Hierarchy Nodes</span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th style="width: 100px;">Hub ID</th>
+                        <th>Hub Name</th>
+                        <th>Location</th>
+                        <th>Node Position</th>
+                        <th style="width: 180px;">Visit Sequence (<span id="table-traversal-label">{{ active_traversal|capitalize }}</span>)</th>
+                    </tr>
+                </thead>
+                <tbody id="table-node-rows">
+                    {% for node in nodes %}
+                        {% set visit_idx = 0 %}
+                        {% for hid in sequence %}
+                            {% if hid == node.hub_id %}
+                                {% set visit_idx = loop.index %}
+                            {% endif %}
+                        {% endfor %}
+                        <tr id="row-{{ node.hub_id }}">
+                            <td><span class="badge text-bg-primary fs-6 px-3 py-1">{{ node.hub_id }}</span></td>
+                            <td class="fw-bold">{{ node.hub_name }}</td>
+                            <td>📍 {{ node.location }}</td>
+                            <td>
+                                {% if "Root" in node.position %}
+                                    <span class="badge bg-dark-subtle text-dark border px-2 py-1">Root Node</span>
+                                {% elif "Left" in node.position %}
+                                    <span class="badge bg-primary-subtle text-primary border px-2 py-1">{{ node.position }}</span>
+                                {% else %}
+                                    <span class="badge bg-info-subtle text-info-emphasis border px-2 py-1">{{ node.position }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="step-badge" id="table-step-{{ node.hub_id }}">
+                                    Step {{ visit_idx }} of 7
+                                </span>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <footer class="text-center text-secondary mt-5">
+        Smart Parcel · Data Structures Project · Binary Tree Traversal Demonstration
+    </footer>
+
+</div>
+
+<!-- Bootstrap 5.3 JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Server-side JSON Data Elements for IDE and Browser Compatibility -->
+<script id="all-traversals-data" type="application/json">
+{{ all_traversals|tojson }}
+</script>
+<script id="node-data" type="application/json">
+{{ nodes|tojson }}
+</script>
+
+<!-- Interactive switching script for instant feedback + fallback to query string -->
+<script>
+    const allTraversals = JSON.parse(document.getElementById('all-traversals-data').textContent);
+    const nodeData = JSON.parse(document.getElementById('node-data').textContent);
+
+    function updateView(tType, pushUrl = true) {
+        if (!allTraversals[tType]) return;
+        const data = allTraversals[tType];
+        const seq = data.sequence;
+
+        // 1. Update Buttons
+        ['inorder', 'preorder', 'postorder'].forEach(type => {
+            const btn = document.getElementById(`btn-${type}`);
+            if (btn) {
+                if (type === tType) {
+                    btn.classList.add('btn-primary', 'active');
+                    btn.classList.remove('btn-outline-primary');
+                } else {
+                    btn.classList.remove('btn-primary', 'active');
+                    btn.classList.add('btn-outline-primary');
+                }
+            }
+        });
+
+        // 2. Update Explanation
+        document.getElementById('explanation-title').textContent = data.explanation.title;
+        document.getElementById('explanation-rule').innerHTML = `<strong>Rule:</strong> ${data.explanation.rule}`;
+        document.getElementById('explanation-desc').textContent = data.explanation.description;
+
+        // 3. Update Sequence Display
+        document.getElementById('sequence-display').textContent = data.sequence_str;
+
+        // 4. Update Pills
+        const pillsContainer = document.getElementById('sequence-pills');
+        pillsContainer.innerHTML = '';
+        seq.forEach((id, index) => {
+            const node = nodeData.find(n => n.hub_id === id);
+            if (node) {
+                const pill = document.createElement('div');
+                pill.className = 'hub-pill';
+                pill.innerHTML = `
+                    <span class="hub-id-badge">ID: ${node.hub_id}</span>
+                    <span>${node.hub_name}</span>
+                    <small class="text-muted">(${node.location})</small>
+                `;
+                pillsContainer.appendChild(pill);
+
+                if (index < seq.length - 1) {
+                    const arrow = document.createElement('span');
+                    arrow.className = 'arrow-sep';
+                    arrow.textContent = '→';
+                    pillsContainer.appendChild(arrow);
+                }
+            }
+        });
+
+        // 5. Update SVG Node Step Badges
+        seq.forEach((id, index) => {
+            const stepText = document.getElementById(`step-${id}`);
+            if (stepText) {
+                stepText.textContent = `#${index + 1}`;
+            }
+        });
+
+        // 6. Update Table Step Badges & Label
+        document.getElementById('table-traversal-label').textContent = tType.charAt(0).toUpperCase() + tType.slice(1);
+        seq.forEach((id, index) => {
+            const tableStep = document.getElementById(`table-step-${id}`);
+            if (tableStep) {
+                tableStep.textContent = `Step ${index + 1} of 7`;
+            }
+        });
+
+        if (pushUrl && window.history && window.history.pushState) {
+            window.history.pushState(null, '', `?traversal=${tType}`);
+        }
+    }
+
+    // Attach click events to buttons for instant dynamic switching
+    ['inorder', 'preorder', 'postorder'].forEach(type => {
+        const btn = document.getElementById(`btn-${type}`);
+        if (btn) {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                updateView(type, true);
+            });
+        }
+    });
+
+    // Initialize initial view state on load
+    updateView("{{ active_traversal }}", false);
+</script>
+
+</body>
+</html>

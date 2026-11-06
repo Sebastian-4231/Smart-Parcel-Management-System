@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Queue | Smart Parcel</title>
+
+    <!-- Bootstrap 5 & Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <!-- Unified Top Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-smart sticky-top">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-box-seam-fill text-primary"></i>
+                <span>Smart Parcel</span>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#smartNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="smartNavbar">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/"><i class="bi bi-speedometer2"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/parcels"><i class="bi bi-box-seam"></i> Parcels</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/queue"><i class="bi bi-truck"></i> Queue</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/hubs"><i class="bi bi-diagram-3"></i> Hubs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/network"><i class="bi bi-share"></i> Network</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/status"><i class="bi bi-layers"></i> Status</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/sorting"><i class="bi bi-sort-numeric-down"></i> Sorting</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search"><i class="bi bi-search"></i> Search</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/binary-tree"><i class="bi bi-diagram-2"></i> Tree Demo</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-4">
+
+        <!-- Page Header -->
+        <div class="page-header-smart mb-4">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div>
+                    <h2 class="fw-bold mb-1">Delivery Queue</h2>
+                    <p class="mb-0 text-white-50">Manage packages awaiting vehicle dispatch.</p>
+                </div>
+                <span
+                    class="badge bg-primary-subtle text-white border border-light border-opacity-25 px-3 py-2 fw-semibold">
+                    {{ parcels|length }} Enqueued Package(s)
+                </span>
+            </div>
+        </div>
+
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show d-flex align-items-center gap-2 mb-4"
+            role="alert">
+            {% if category == 'success' %}
+            <i class="bi bi-check-circle-fill fs-5"></i>
+            {% elif category == 'danger' %}
+            <i class="bi bi-exclamation-octagon-fill fs-5"></i>
+            {% else %}
+            <i class="bi bi-info-circle-fill fs-5"></i>
+            {% endif %}
+            <div>{{ message }}</div>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+        {% endwith %}
+
+        <!-- Queue Action Card -->
+        <div class="card content-card p-4 mb-4">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div>
+                    <h4 class="fw-bold mb-1" style="color: var(--primary-navy);">
+                        <i class="bi bi-truck text-warning me-2"></i>Dispatch Next Parcel
+                    </h4>
+                </div>
+
+                <form action="{{ url_for('process_next') }}" method="POST">
+                    <button type="submit" class="btn btn-success px-4 py-2" {% if not parcels %}disabled{% endif %}>
+                        <i class="bi bi-send-check me-1"></i> Process Next Parcel
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Queue Table Card -->
+        <div class="card content-card p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="fw-bold mb-0" style="color: var(--primary-navy);">Dispatch Queue</h4>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover table-smart align-middle">
+                    <thead>
+                        <tr>
+                            <th style="width: 140px;">Queue Position</th>
+                            <th>Parcel ID</th>
+                            <th>Receiver</th>
+                            <th>Destination</th>
+                            <th>Priority</th>
+                            <th>Current Status</th>
+                            <th style="width: 120px;" class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for parcel in parcels %}
+                        <tr>
+                            <td>
+                                {% if loop.first %}
+                                <span class="badge bg-success py-1 px-2">
+                                    <i class="bi bi-arrow-right-circle"></i> Front (#1)
+                                </span>
+                                {% else %}
+                                <span class="badge bg-secondary-subtle text-secondary py-1 px-2">
+                                    Position #{{ loop.index }}
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td><span class="badge text-bg-light border fw-bold">#{{ parcel.parcel_id }}</span></td>
+                            <td class="fw-semibold">{{ parcel.receiver }}</td>
+                            <td><i class="bi bi-geo-alt text-danger me-1"></i>{{ parcel.destination }}</td>
+                            <td>
+                                <span class="badge
+                            {% if parcel.priority == 'High' %}
+                                text-bg-danger
+                            {% elif parcel.priority == 'Medium' %}
+                                text-bg-warning
+                            {% else %}
+                                text-bg-success
+                            {% endif %}">
+                                    {{ parcel.priority }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge bg-info-subtle text-info-emphasis border px-2 py-1">
+                                    {{ parcel.status }}
+                                </span>
+                            </td>
+                            <td class="text-end">
+                                <form action="{{ url_for('remove_from_queue', parcel_id=parcel.parcel_id) }}"
+                                    method="POST"
+                                    onsubmit="return confirm('Remove Parcel #{{ parcel.parcel_id }} from the delivery queue?');">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger py-1 px-2"
+                                        title="Remove from queue">
+                                        <i class="bi bi-x-circle"></i> Remove
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center text-secondary py-5">
+                                <i class="bi bi-check2-circle fs-1 d-block mb-2 text-success"></i>
+                                The delivery queue is currently empty.
+                                <div class="mt-2 text-muted small">
+                                    When parcels reach "Ready for Dispatch" and have valid routes, enqueue them from <a
+                                        href="/parcels">Parcel Management</a>.
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer-smart">
+            Smart Parcel Management System.
+        </footer>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

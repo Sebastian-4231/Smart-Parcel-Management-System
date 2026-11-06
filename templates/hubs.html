@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Hubs (BST) | Smart Parcel</title>
+
+    <!-- Bootstrap 5 & Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <!-- Unified Top Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-smart sticky-top">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-box-seam-fill text-primary"></i>
+                <span>Smart Parcel</span>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#smartNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="smartNavbar">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/"><i class="bi bi-speedometer2"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/parcels"><i class="bi bi-box-seam"></i> Parcels</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/queue"><i class="bi bi-truck"></i> Queue</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/hubs"><i class="bi bi-diagram-3"></i> Hubs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/network"><i class="bi bi-share"></i> Network</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/status"><i class="bi bi-layers"></i> Status</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/sorting"><i class="bi bi-sort-numeric-down"></i> Sorting</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search"><i class="bi bi-search"></i> Search</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/binary-tree"><i class="bi bi-diagram-2"></i> Tree Demo</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-4">
+
+        <!-- Page Header -->
+        <div class="page-header-smart mb-4">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div>
+                    <h2 class="fw-bold mb-1">Delivery Hubs Management</h2>
+                </div>
+                <span
+                    class="badge bg-primary-subtle text-white border border-light border-opacity-25 px-3 py-2 fw-semibold">
+                    {{ hubs|length }} Hub(s) in BST
+                </span>
+            </div>
+        </div>
+
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show d-flex align-items-center gap-2 mb-4"
+            role="alert">
+            {% if category == 'success' %}
+            <i class="bi bi-check-circle-fill fs-5"></i>
+            {% elif category == 'danger' %}
+            <i class="bi bi-exclamation-octagon-fill fs-5"></i>
+            {% else %}
+            <i class="bi bi-info-circle-fill fs-5"></i>
+            {% endif %}
+            <div>{{ message }}</div>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+        {% endwith %}
+
+        <div class="row g-4 mb-4">
+            <!-- 1. Register Delivery Hub -->
+            <div class="col-lg-6">
+                <div class="card content-card p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="fw-bold mb-0" style="color: var(--primary-navy);">
+                            <i class="bi bi-node-plus text-primary me-2"></i>Register Hub
+                        </h4>
+                    </div>
+
+                    <form action="{{ url_for('add_hub') }}" method="POST">
+                        <div class="mb-3">
+                            <label class="form-label">Hub ID </label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-secondary"><i class="bi bi-key"></i></span>
+                                <input type="number" name="hub_id" class="form-control" min="1" placeholder="e.g. 220"
+                                    required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Hub Name</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-secondary"><i
+                                        class="bi bi-building"></i></span>
+                                <input type="text" name="hub_name" class="form-control" placeholder="e.g. Kannur Hub"
+                                    required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Location / City</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light text-secondary"><i
+                                        class="bi bi-geo-alt"></i></span>
+                                <input type="text" name="location" class="form-control" placeholder="e.g. Kannur"
+                                    required>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary px-4 py-2 mt-2">
+                            <i class="bi bi-plus-lg me-1"></i> Insert
+                        </button>
+                        <small class="text-muted d-block mt-2">
+                            <i class="bi bi-info-circle text-primary me-1"></i>
+                             <a href="/network">Delivery Network</a> for manual route connection.
+                        </small>
+                    </form>
+                </div>
+            </div>
+
+            <!-- 2. Search Hub by ID -->
+            <div class="col-lg-6">
+                <div class="card content-card p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="fw-bold mb-0" style="color: var(--primary-navy);">
+                            <i class="bi bi-search text-info me-2"></i>Search Hub
+                        </h4>
+                    </div>
+
+                    <form action="{{ url_for('hubs_page') }}" method="GET" class="mb-3">
+                        <label class="form-label">Hub ID to Query</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light text-secondary"><i class="bi bi-hash"></i></span>
+                            <input type="number" name="search_id" class="form-control"
+                                placeholder="Enter Hub ID (e.g. 201)..." value="{{ search_id or '' }}" required>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-search me-1"></i> Search 
+                            </button>
+                            {% if search_id %}
+                            <a href="{{ url_for('hubs_page') }}" class="btn btn-outline-secondary">Reset</a>
+                            {% endif %}
+                        </div>
+                    </form>
+
+                    {% if searched_hub %}
+                    <div class="alert alert-success mt-3 mb-0 p-3">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                            <h6 class="fw-bold mb-0">Delivery Hub</h6>
+                        </div>
+                        <div class="row g-2 small mt-1">
+                            <div class="col-4"><strong>Hub ID:</strong> <span class="badge bg-secondary">#{{
+                                    searched_hub.hub_id }}</span></div>
+                            <div class="col-4"><strong>Hub Name:</strong> {{ searched_hub.hub_name }}</div>
+                            <div class="col-4"><strong>City:</strong> {{ searched_hub.location }}</div>
+                        </div>
+                    </div>
+                    {% elif search_id %}
+                    <div class="alert alert-danger mt-3 mb-0 d-flex align-items-center gap-2">
+                        <i class="bi bi-x-circle-fill fs-5"></i>
+                        <div>No delivery hub found with Hub ID <strong>{{ search_id }}</strong></div>
+                    </div>
+                    {% else %}
+
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Hubs Table (In-order Traversal) -->
+        <div class="card content-card p-4">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                <div>
+                    <h4 class="fw-bold mb-1" style="color: var(--primary-navy);">Registered Hubs </h4>
+                </div>
+                <span class="badge bg-primary fs-6">{{ hubs|length }} Registered Hub(s)</span>
+            </div>
+
+            {% if hubs %}
+            <div class="alert alert-info py-2 px-3 mb-3 d-flex align-items-center flex-wrap gap-2">
+                <strong class="me-1"><i class="bi bi-arrow-left-right me-1"></i>In-Order Sequence:</strong>
+                {% for hub in hubs %}
+                <span class="badge bg-primary text-white py-1 px-2">#{{ hub.hub_id }}: {{ hub.hub_name }}</span>
+                {% if not loop.last %}
+                <i class="bi bi-arrow-right text-primary"></i>
+                {% endif %}
+                {% endfor %}
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover table-smart align-middle">
+                    <thead>
+                        <tr>
+                            <th style="width: 140px;">Hub ID (Key)</th>
+                            <th>Hub Name</th>
+                            <th>Location / City</th>
+                            <th style="width: 160px;" class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for hub in hubs %}
+                        <tr>
+                            <td><span class="badge text-bg-light border fw-bold fs-6">#{{ hub.hub_id }}</span></td>
+                            <td class="fw-semibold">{{ hub.hub_name }}</td>
+                            <td><i class="bi bi-geo-alt text-danger me-1"></i>{{ hub.location }}</td>
+                            <td class="text-end">
+                                <a href="/network" class="btn btn-sm btn-outline-primary py-1 px-2 me-1"
+                                    title="View in Delivery Network">
+                                    <i class="bi bi-share"></i> Network
+                                </a>
+                                <form action="{{ url_for('delete_hub', hub_id=hub.hub_id) }}" method="POST"
+                                    onsubmit="return confirm('Delete Hub #{{ hub.hub_id }} ({{ hub.hub_name }}) from the BST and remove its network routes?');"
+                                    class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger py-1 px-2"
+                                        title="Remove from BST & Network">
+                                        <i class="bi bi-trash"></i> Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-secondary text-center py-5 mb-0">
+                <i class="bi bi-diagram-3 fs-1 d-block mb-2 text-muted"></i>
+                 No hubs registered yet.
+            </p>
+            {% endif %}
+        </div>
+        <!-- Footer -->
+        <footer class="footer-smart">
+            Smart Parcel Management System.
+        </footer>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

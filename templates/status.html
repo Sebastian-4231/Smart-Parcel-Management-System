@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parcel Status History | Smart Parcel</title>
+
+    <!-- Bootstrap 5 & Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <!-- Unified Top Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-smart sticky-top">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-box-seam-fill text-primary"></i>
+                <span>Smart Parcel</span>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#smartNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="smartNavbar">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/"><i class="bi bi-speedometer2"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/parcels"><i class="bi bi-box-seam"></i> Parcels</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/queue"><i class="bi bi-truck"></i> Queue</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/hubs"><i class="bi bi-diagram-3"></i> Hubs</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/network"><i class="bi bi-share"></i> Network</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/status"><i class="bi bi-layers"></i> Status</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/sorting"><i class="bi bi-sort-numeric-down"></i> Sorting</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/search"><i class="bi bi-search"></i> Search</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/binary-tree"><i class="bi bi-diagram-2"></i> Tree Demo</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-4">
+
+        <!-- Page Header -->
+        <div class="page-header-smart mb-4">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div>
+                    <h2 class="fw-bold mb-1">Parcel Status History</h2>
+                    <p class="mb-0 text-white-50">Track parcel state.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show d-flex align-items-center gap-2 mb-4"
+            role="alert">
+            {% if category == 'success' %}
+            <i class="bi bi-check-circle-fill fs-5"></i>
+            {% elif category == 'danger' %}
+            <i class="bi bi-exclamation-octagon-fill fs-5"></i>
+            {% else %}
+            <i class="bi bi-info-circle-fill fs-5"></i>
+            {% endif %}
+            <div>{{ message }}</div>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+        {% endwith %}
+
+        <div class="row g-4 mb-4">
+            <!-- 1. Update Status (Stack Push) -->
+            <div class="col-lg-6">
+                <div class="card content-card p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="fw-bold mb-0" style="color: var(--primary-navy);">
+                            <i class="bi bi-arrow-down-circle text-primary me-2"></i>Push New Status
+                        </h4>
+                    </div>
+
+                    <form action="{{ url_for('update_parcel_status') }}" method="POST">
+                        <div class="mb-3">
+                            <label class="form-label">Select Target Parcel</label>
+                            <select name="parcel_id" class="form-select" required>
+                                <option value="">-- Choose Parcel ID --</option>
+                                {% for parcel in parcels %}
+                                <option value="{{ parcel.parcel_id }}" {% if selected_id==parcel.parcel_id|string
+                                    %}selected{% endif %}>
+                                    Parcel #{{ parcel.parcel_id }} ({{ parcel.sender }} → {{ parcel.receiver }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">New Transition Status</label>
+                            <select name="status" class="form-select" required>
+                                <option value="">-- Choose Status to Push --</option>
+                                <option value="Packed">Packed</option>
+                                <option value="Ready for Dispatch">Ready for Dispatch</option>
+                                <option value="Out for Delivery">Out for Delivery</option>
+                            </select>
+                            <small class="text-muted">Pushing 'Ready for Dispatch' checks delivery network reachability
+                                before enqueuing.</small>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary px-4 py-2 mt-2">
+                            <i class="bi bi-box-arrow-in-down me-1"></i> Upadate Status
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- 2. Select Parcel History -->
+            <div class="col-lg-6">
+                <div class="card content-card p-4 h-100">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="fw-bold mb-0" style="color: var(--primary-navy);">
+                            <i class="bi bi-layers text-info me-2"></i>Inspect Parcel
+                        </h4>
+                    </div>
+
+                    <form action="{{ url_for('status_page') }}" method="GET" class="mb-4">
+                        <label class="form-label">Choose Parcel to Inspect</label>
+                        <div class="input-group">
+                            <select name="parcel_id" class="form-select" required>
+                                <option value="">-- Select Parcel ID --</option>
+                                {% for parcel in parcels %}
+                                <option value="{{ parcel.parcel_id }}" {% if selected_id==parcel.parcel_id|string
+                                    %}selected{% endif %}>
+                                    Parcel #{{ parcel.parcel_id }} ({{ parcel.sender }} to {{ parcel.receiver }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-eye me-1"></i> Inspect
+                            </button>
+                        </div>
+                    </form>
+
+                    {% if selected_id %}
+                    <div class="alert alert-info d-flex justify-content-between align-items-center mb-0 p-3">
+                        <div>
+                            <div class="fw-bold">Current Status: <span class="badge text-bg-primary fs-6 ms-1">{{
+                                    top_status or 'None' }}</span></div>
+                        </div>
+                        {% if history and history|length > 1 %}
+                        <form action="{{ url_for('pop_parcel_status') }}" method="POST" class="m-0"
+                            onsubmit="return confirm('Pop the top entry from this status history Stack?');">
+                            <input type="hidden" name="parcel_id" value="{{ selected_id }}">
+                            <button type="submit" class="btn btn-outline-danger btn-sm"
+                                title="Revert to previous status">
+                                <i class="bi bi-arrow-up-circle me-1"></i>Remove
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                    {% else %}
+
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Stack Frame History View -->
+        <div class="card content-card p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h4 class="fw-bold mb-1" style="color: var(--primary-navy);">Pracel Status History</h4>
+                    </h4>
+                    <p class="text-secondary small mb-0">Most recent state appears at the top.</p>
+                </div>
+                {% if selected_id %}
+                <span class="badge text-bg-primary fs-6">Parcel #{{ selected_id }}</span>
+                {% endif %}
+            </div>
+
+            {% if history %}
+            <div class="list-group">
+                {% for status in history %}
+                <div
+                    class="list-group-item d-flex justify-content-between align-items-center py-3 {% if loop.first %}border-primary bg-primary-subtle{% endif %}">
+                    <div class="d-flex align-items-center gap-3">
+                        {% if loop.first %}
+                        <span class="badge bg-primary text-white py-2 px-3">
+                            <i class="bi bi-arrow-down-right"></i> TOP
+                        </span>
+                        {% else %}
+                        <span class="badge bg-secondary-subtle text-secondary py-2 px-3">
+                            #{{ loop.revindex }}
+                        </span>
+                        {% endif %}
+                        <span class="fw-bold fs-6">{{ status }}</span>
+                    </div>
+                    <div>
+                        {% if loop.first %}
+                        <span
+                            class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-1 fw-semibold">
+                            Active Parcel State
+                        </span>
+                        {% else %}
+                        <small class="text-muted">Historical Frame</small>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% elif selected_id %}
+            <p class="text-secondary text-center py-5 mb-0">
+                <i class="bi bi-layers fs-1 d-block mb-2 text-muted"></i>
+                No status history available for Parcel #{{ selected_id }}.
+            </p>
+            {% else %}
+            <p class="text-secondary text-center py-5 mb-0">
+                <i class="bi bi-layers fs-1 d-block mb-2 text-muted"></i>
+                Select a parcel above to inspect its status history.
+            </p>
+            {% endif %}
+        </div>
+        <!-- Footer -->
+        <footer class="footer-smart">
+            Smart Parcel Management System.
+        </footer>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,358 @@
+/* Smart Parcel Management System - Unified Modern Design System */
+:root {
+    --primary-navy: #14213d;
+    --primary-navy-dark: #0b1324;
+    --accent-blue: #2563eb;
+    --accent-blue-hover: #1d4ed8;
+    --bg-light: #f8fafc;
+    --card-bg: #ffffff;
+    --border-color: #e2e8f0;
+    --text-primary: #0f172a;
+    --text-secondary: #64748b;
+    --text-muted: #94a3b8;
+    --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    --card-hover-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+body {
+    background-color: var(--bg-light);
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ========================================================
+   NAVIGATION: Top Navbar & Subpages
+   ======================================================== */
+.navbar-smart {
+    background: var(--primary-navy);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+    padding: 12px 0;
+}
+
+.navbar-smart .navbar-brand {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #ffffff !important;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: -0.3px;
+}
+
+.navbar-smart .nav-link {
+    color: #cbd5e1 !important;
+    font-weight: 500;
+    font-size: 0.9rem;
+    padding: 8px 14px !important;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.navbar-smart .nav-link:hover {
+    color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.navbar-smart .nav-link.active {
+    color: #ffffff !important;
+    background: var(--accent-blue);
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
+}
+
+/* ========================================================
+   SIDEBAR (Dashboard index.html)
+   ======================================================== */
+.sidebar-smart {
+    min-height: 100vh;
+    background: var(--primary-navy);
+    color: #ffffff;
+    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.05);
+}
+
+.sidebar-smart .brand {
+    font-size: 1.35rem;
+    font-weight: 800;
+    padding: 24px 22px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    letter-spacing: -0.3px;
+}
+
+.sidebar-smart .nav-item-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #cbd5e1;
+    text-decoration: none;
+    padding: 12px 18px;
+    border-radius: 10px;
+    margin: 4px 12px;
+    font-size: 0.92rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.sidebar-smart .nav-item-link i {
+    font-size: 1.1rem;
+    opacity: 0.85;
+}
+
+.sidebar-smart .nav-item-link:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateX(3px);
+}
+
+.sidebar-smart .nav-item-link.active {
+    background: var(--accent-blue);
+    color: #ffffff;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+}
+
+/* ========================================================
+   PAGE HEADERS & BANNERS
+   ======================================================== */
+.page-header-smart {
+    background: linear-gradient(135deg, #1e3a8a 0%, #14213d 100%);
+    color: #ffffff;
+    padding: 26px 30px;
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(20, 33, 61, 0.12);
+}
+
+.page-header-smart h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+}
+
+.page-header-smart p {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.95rem;
+    margin-bottom: 0;
+}
+
+/* ========================================================
+   CARDS & CONTAINERS
+   ======================================================== */
+.content-card {
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    background: var(--card-bg);
+    box-shadow: var(--card-shadow);
+    transition: box-shadow 0.2s ease;
+}
+
+.content-card:hover {
+    box-shadow: var(--card-hover-shadow);
+}
+
+.card-header-smart {
+    background: transparent;
+    border-bottom: 1px solid var(--border-color);
+    padding: 16px 22px;
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--text-primary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Dashboard Statistics Cards */
+.stat-card-smart {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 20px 22px;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card-smart:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--card-hover-shadow);
+}
+
+.stat-card-smart .stat-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+}
+
+.stat-card-smart .stat-number {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--primary-navy);
+    line-height: 1.1;
+    margin-top: 4px;
+    letter-spacing: -0.5px;
+}
+
+.stat-card-smart .stat-title {
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+}
+
+/* Quick Action Cards */
+.action-card-smart {
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    background: #ffffff;
+    box-shadow: var(--card-shadow);
+    transition: all 0.25s ease;
+    display: flex;
+    flex-direction: column;
+    padding: 22px;
+}
+
+.action-card-smart:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--card-hover-shadow);
+    border-color: #cbd5e1;
+}
+
+.action-card-smart h5 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ========================================================
+   TABLES
+   ======================================================== */
+.table-smart {
+    margin-bottom: 0;
+}
+
+.table-smart th {
+    background: #f1f5f9 !important;
+    color: #475569 !important;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-top: none;
+    border-bottom: 1px solid var(--border-color);
+    padding: 12px 16px;
+    white-space: nowrap;
+}
+
+.table-smart td {
+    padding: 14px 16px;
+    vertical-align: middle;
+    font-size: 0.92rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.table-smart tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+/* ========================================================
+   FORMS & INPUTS
+   ======================================================== */
+.form-label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #334155;
+    margin-bottom: 6px;
+}
+
+.form-control, .form-select {
+    border: 1px solid #cbd5e1;
+    border-radius: 9px;
+    padding: 9px 14px;
+    font-size: 0.92rem;
+    transition: all 0.2s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+/* ========================================================
+   BUTTONS & BADGES
+   ======================================================== */
+.btn {
+    border-radius: 9px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 9px 18px;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.btn-primary {
+    background: var(--accent-blue);
+    border-color: var(--accent-blue);
+}
+
+.btn-primary:hover {
+    background: var(--accent-blue-hover);
+    border-color: var(--accent-blue-hover);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+}
+
+.badge-ds {
+    background: #ede9fe;
+    color: #6d28d9;
+    font-weight: 700;
+    font-size: 0.76rem;
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.3px;
+}
+
+/* Flash message alerts */
+.alert {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+/* Footer */
+.footer-smart {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+    padding: 30px 0 15px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767px) {
+    .sidebar-smart {
+        min-height: auto;
+    }
+    .page-header-smart {
+        padding: 20px 22px;
+    }
+    .page-header-smart h2 {
+        font-size: 1.4rem;
+    }
+}
